@@ -10,7 +10,7 @@ import TextField from "components/controls/TextField";
 import Foldout from "components/Foldout";
 import GraphDiv from "components/musicAdventure/GraphDiv";
 
-const IndexPage = (): JSX.Element => {
+const test = (): JSX.Element => {
     const [startingAlbum, setStartingAlbum] = useState<{ artistName: string; albumName: string }>({
         artistName: "Bridget St John",
         albumName: "Songs for the Gentle Man",
@@ -90,49 +90,31 @@ const IndexPage = (): JSX.Element => {
             const direction = isAlbum(node.data) ? null : (node.data as Direction);
             const children = adventureGraph.getNodeChildren(nodeId);
             return (
-                <div key={nodeId} style={{ marginLeft: `${margin * 1.5}rem` }} className="pl-2">
+                <div
+                    key={nodeId}
+                    style={{ marginLeft: `${margin * 1}rem` }}
+                    className="border-white border-l pl-2"
+                >
                     {/* <span>{nodeId}</span> */}
-                    {album && children.length === 0 && !!parentNode && (
-                        <AlbumTile album={album}>
-                            <Button
-                                disabled={loading}
-                                onClick={() => {
-                                    if (album != null)
-                                        adventure.chooseAlbum(parentNode?.id, node.data.index);
-                                    else adventure.chooseDirection(parentNode?.id, node.data.index);
-                                }}
-                            >
-                                {loading ? (
-                                    <FaSync className="animate-spin my-1.5" />
-                                ) : (
-                                    "Choose Album"
-                                )}
-                            </Button>
-                        </AlbumTile>
-                    )}
-                    {album && !(children.length === 0 && !!parentNode) && (
-                        <AlbumTile album={album} />
-                    )}
-                    {direction && children.length === 0 && !!parentNode && (
+                    {album && <AlbumTile album={album} />}
+                    {direction && (
                         <>
-                            <p
-                                className="text-2xl italic bg-white bg-opacity-0 hover:bg-opacity-10 transition-all rounded cursor-pointer no-select"
-                                onClick={() => {
-                                    adventure.chooseDirection(parentNode?.id, node.data.index);
-                                }}
-                            >
-                                {direction.direction}:
-                            </p>
+                            <p>{direction.direction}</p>
                         </>
                     )}
-                    {direction && !(children.length === 0 && !!parentNode) && (
-                        <>
-                            <p className="text-2xl italic mb-4">{direction.direction}:</p>
-                        </>
+                    {children.length > 0 && getChildren(nodeId, margin + 1)}
+                    {children.length === 0 && !!parentNode && (
+                        <Button
+                            disabled={loading}
+                            onClick={() => {
+                                if (album != null)
+                                    adventure.chooseAlbum(parentNode?.id, node.data.index);
+                                else adventure.chooseDirection(parentNode?.id, node.data.index);
+                            }}
+                        >
+                            {loading ? <FaSync className="animate-spin my-1.5" /> : node.data.index}
+                        </Button>
                     )}
-                    <div className="flex flex-col gap-4">
-                        {children.length > 0 && getChildren(nodeId, margin + 1)}
-                    </div>
                 </div>
             );
         };
@@ -231,4 +213,4 @@ const IndexPage = (): JSX.Element => {
     );
 };
 
-export default IndexPage;
+export default test;

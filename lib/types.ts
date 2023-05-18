@@ -1,9 +1,3 @@
-export interface Album {
-    albumName: string;
-    artistName: string;
-    description?: string;
-}
-
 export interface AdventureSetup {
     startingAlbum: Album;
     criteria: string[];
@@ -20,25 +14,30 @@ export interface OptionsPresentation {
     albums: (Album & { index: string })[];
 }
 
-export interface DiscogsAlbum {
-    country: string;
-    year: string;
-    format: string[];
-    label: string[];
-    genre: string[];
-    style: string[];
-    id: number;
-    barcode: string[];
-    master_id: number;
-    master_url: string;
-    uri: string;
-    catno: string;
-    title: string;
-    thumb: string;
-    cover_image: string;
-    resource_url: string;
-    formats: {
-        name: string;
-        descriptions: string[];
-    }[];
+//type check for branch presentation
+export const isBranchPresentation = (obj: any): obj is BranchPresentation => {
+    return obj.options !== undefined;
+};
+
+export interface BaseLoadable<T, U> {
+    baseData: T;
+    loading: boolean;
+    loadedData: U | null;
 }
+
+export interface Album {
+    index: string;
+    albumName: string;
+    artistName: string;
+    description: string;
+    coverUrl: string;
+}
+
+export interface Direction {
+    index: string;
+    direction: string;
+}
+
+export const isAlbum = (obj: Album | Direction): obj is Album => {
+    return (obj as Album).albumName !== undefined;
+};

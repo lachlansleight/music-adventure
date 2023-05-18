@@ -14,6 +14,7 @@
     },
     "dependencies": {
         "axios": "^1.4.0",
+        "cytoscape": "^3.25.0",
         "dayjs": "latest",
         "next": "latest",
         "react": "latest",
@@ -21,6 +22,7 @@
         "react-icons": "latest"
     },
     "devDependencies": {
+        "@types/cytoscape": "^3.19.9",
         "@types/node": "latest",
         "@types/react": "latest",
         "@typescript-eslint/eslint-plugin": "latest",
