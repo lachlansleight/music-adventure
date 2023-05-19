@@ -4,8 +4,15 @@ import { getStartingPrompt, systemMessage, wrapMessage } from "./gpt";
 import { OpenAiChatMessage } from "./openAi";
 import { Album, Direction, isAlbum } from "./types";
 
+export type MusicAdventureData = {
+    nodes: Record<string, Node<Album | Direction>>;
+    edges: Record<string, Edge>;
+    criteria: string[];
+};
+
 class MusicAdventure {
     public loading: boolean;
+    public id: string;
     public startingAlbum: Album;
     public criteria: string[];
     private graph: Graph<Album | Direction>;
@@ -13,23 +20,55 @@ class MusicAdventure {
     public onLoadingChanged: ((loading: boolean) => void) | null;
     public onDataChanged: ((data: Graph<Album | Direction>) => void) | null;
 
-    constructor(startingAlbum: Album, criteria?: string[]) {
+    constructor(startingAlbum?: Album, criteria?: string[]) {
+        this.id = new Date().valueOf().toFixed();
         this.loading = false;
-        this.startingAlbum = startingAlbum;
+        this.startingAlbum = startingAlbum || {
+            albumName: "",
+            artistName: "",
+            description: "",
+            index: "0",
+            coverUrl: "",
+        };
         this.criteria = criteria || [];
         this.graph = new Graph<Album | Direction>({ ...this.startingAlbum });
         this.onDataChanged = null;
         this.onLoadingChanged = null;
     }
 
-    public setFromSerializedData(
-        nodes: Record<string, Node<Album | Direction>>,
-        edges: Record<string, Edge>,
-        criteria: string[]
-    ) {
-        this.criteria = criteria;
-        this.graph.setFromSerializedGraph(nodes, edges);
+    public setFromSerializedData(id: string, data: MusicAdventureData) {
+        this.id = id;
+        this.criteria = data.criteria;
+        this.graph.setFromSerializedGraph(data.nodes, data.edges);
+        this.startingAlbum = this.graph.originNode.data as Album;
         if (this.onDataChanged) this.onDataChanged(this.graph);
+    }
+
+    public getData(): MusicAdventureData {
+        return {
+            nodes: this.graph.nodes,
+            edges: this.graph.edges,
+            criteria: this.criteria,
+        };
+    }
+
+    public saveToLocalStorage() {
+        const ids: string[] = JSON.parse(localStorage.getItem("mapIds") || "[]");
+        if (!ids.includes(this.id)) ids.push(this.id);
+        localStorage.setItem("adventure_" + this.id, JSON.stringify(this.getData()));
+        localStorage.setItem("mapIds", JSON.stringify(ids));
+    }
+
+    public loadFromLocalStorage(id: string) {
+        this.id = id;
+        const dataString = localStorage.getItem("adventure_" + id);
+        if (!dataString) return;
+        const data = JSON.parse(dataString) as MusicAdventureData;
+        this.setFromSerializedData(id, data);
+    }
+
+    public getPathToNode(nodeId: string) {
+        return this.graph.getPathToNode(nodeId);
     }
 
     /** Recreates the chat history that resulted in the current node (disregarding other branches taken)
@@ -337,6 +376,11 @@ class MusicAdventure {
         const newId = this.graph.addNode(parentId, data);
         if (this.onDataChanged) this.onDataChanged(this.graph);
         return newId;
+    }
+
+    public pruneNode(id: string) {
+        this.graph.pruneNode(id);
+        if (this.onDataChanged) this.onDataChanged(this.graph);
     }
 
     private setLoading(val: boolean) {

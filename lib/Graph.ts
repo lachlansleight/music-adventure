@@ -43,6 +43,23 @@ class Graph<T> {
         return newNodeId;
     }
 
+    /** Removes the node, and recursively removes all of its children. Cannot be called on the origin node */
+    public pruneNode(id: string) {
+        if (id === this.originNode.id) return;
+
+        //recursively remove children
+        const children = this.getNodeChildren(id);
+        for (let i = 0; i < children.length; i++) {
+            this.pruneNode(children[i].id);
+        }
+
+        //remove the node, and any edges that lead to it
+        delete this.nodes[id];
+        Object.values(this.edges).forEach(edge => {
+            if (edge.target === id) delete this.edges[edge.id];
+        });
+    }
+
     /** Gets the child node of the node with the provided ID */
     public getNodeChildren(id: string) {
         const originNode = this.nodes[id];

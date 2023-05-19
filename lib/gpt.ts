@@ -53,6 +53,7 @@ export const systemMessage: OpenAiChatMessage = {
 };
 
 export const getStartingPrompt = (startingAlbum: Album, criteria: string[]) => {
+    if (criteria.length > 0) criteria[0] = "-  " + criteria[0];
     let prompt = mainPrompt.replace("[CRITERIA]", criteria.join("\n-  ")).replace(
         "[STARTALBUM]",
         JSON.stringify(

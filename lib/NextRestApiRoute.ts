@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export class RestError extends Error {
     constructor(message: string, errorCode: number) {
-        super(message, { cause: String(errorCode) });
+        super(message, { cause: new Error(errorCode.toFixed()) });
     }
 }
 

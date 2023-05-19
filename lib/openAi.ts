@@ -73,8 +73,11 @@ class OpenAi {
     static async getCompletion(
         engine: OpenAiEngine,
         prompt: string,
+        key?: string,
         options?: OpenAiCompletionOptions
     ): Promise<OpenAiCompletionResponse> {
+        if (!key) key = process.env.OPENAI_KEY;
+        if (!key) throw new Error("No OpenAI key provided");
         const response = await axios.post(
             `${apiUrl}/engines/${engine}/completions`,
             {
@@ -83,7 +86,7 @@ class OpenAi {
             },
             {
                 headers: {
-                    Authorization: `Bearer ${process.env.OPENAI_KEY}`,
+                    Authorization: `Bearer ${key}`,
                 },
             }
         );
@@ -93,10 +96,13 @@ class OpenAi {
     static async getChatCompletion(
         model: OpenAiEngine,
         messages: OpenAiChatMessage[],
+        key?: string,
         options?: OpenAiChatCompletionOptions
     ): Promise<OpenAiChatCompletionResponse> {
         if (model !== "gpt-4" && model !== "gpt-3.5-turbo")
             throw new Error("Invalid model for chat completion");
+        if (!key) key = process.env.OPENAI_KEY;
+        if (!key) throw new Error("No OpenAI key provided");
         const response = await axios.post(
             `${apiUrl}/chat/completions`,
             {
@@ -106,7 +112,7 @@ class OpenAi {
             },
             {
                 headers: {
-                    Authorization: `Bearer ${process.env.OPENAI_KEY}`,
+                    Authorization: `Bearer ${key}`,
                 },
             }
         );
