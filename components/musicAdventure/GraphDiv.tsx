@@ -49,6 +49,7 @@ const GraphDiv = ({
                     style: {
                         color: "white",
                         backgroundColor: "#C13298",
+                        //label: "data(data.direction)",
                     },
                 },
                 {

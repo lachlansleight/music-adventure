@@ -11,6 +11,7 @@ import Button from "components/controls/Button";
 import MusicPath from "components/musicAdventure/MusicPath";
 import FakeProgressBar from "components/FakeProgressBar";
 import GraphDiv from "components/musicAdventure/GraphDiv";
+import DirectionButton from "components/musicAdventure/DirectionButton";
 
 const MapNode = (): JSX.Element => {
     const [mapId, setMapId] = useState("");
@@ -25,8 +26,7 @@ const MapNode = (): JSX.Element => {
     const [loading, setLoading] = useState(false);
 
     const loadChildren = useCallback(async () => {
-        const adventure = new MusicAdventure();
-        adventure.loadFromLocalStorage(mapId);
+        const adventure = MusicAdventure.load(mapId);
         if (albumNode && parentDirectionNode) {
             setLoading(true);
             await adventure.chooseAlbum(parentDirectionNode.id, albumNode.data.index);
@@ -57,12 +57,11 @@ const MapNode = (): JSX.Element => {
         setAlbumNode(null);
         setDirectionNode(null);
         setChildAlbumNodes([]);
-        setChildAlbumNodes([]);
+        setChildDirectionNodes([]);
         setParentAlbumNode(null);
         setParentDirectionNode(null);
 
-        const adventure = new MusicAdventure();
-        adventure.loadFromLocalStorage(mapId);
+        const adventure = MusicAdventure.load(mapId);
         const node = adventure.getNode(nodeId);
         if (node) {
             const data = node.data;
@@ -126,13 +125,12 @@ const MapNode = (): JSX.Element => {
                         <div className="flex flex-col gap-2">
                             {childDirectionNodes.map(dir => {
                                 return (
-                                    <div
+                                    <DirectionButton
                                         key={dir.id}
-                                        className="select-none cursor-pointer bg-white bg-opacity-10 hover:bg-opacity-20 transition-all rounded p-1"
+                                        mapId={mapId}
+                                        nodeId={dir.id}
                                         onClick={() => router.push(`/map/${mapId}/${dir.id}`)}
-                                    >
-                                        <p className="text-center text-sm">{dir.data.direction}</p>
-                                    </div>
+                                    />
                                 );
                             })}
                         </div>

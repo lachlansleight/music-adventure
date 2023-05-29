@@ -5,6 +5,7 @@ import { OpenAiChatMessage } from "./openAi";
 import { Album, Direction, isAlbum } from "./types";
 
 export type MusicAdventureData = {
+    id: string;
     nodes: Record<string, Node<Album | Direction>>;
     edges: Record<string, Edge>;
     criteria: string[];
@@ -36,20 +37,18 @@ class MusicAdventure {
         this.onLoadingChanged = null;
     }
 
-    public setFromSerializedData(id: string, data: MusicAdventureData) {
-        this.id = id;
+    public static load(id: string): MusicAdventure {
+        const adventure = new MusicAdventure();
+        adventure.loadFromLocalStorage(id);
+        return adventure;
+    }
+
+    public setFromSerializedData(data: MusicAdventureData) {
+        this.id = data.id;
         this.criteria = data.criteria;
         this.graph.setFromSerializedGraph(data.nodes, data.edges);
         this.startingAlbum = this.graph.originNode.data as Album;
         if (this.onDataChanged) this.onDataChanged(this.graph);
-    }
-
-    public getData(): MusicAdventureData {
-        return {
-            nodes: this.graph.nodes,
-            edges: this.graph.edges,
-            criteria: this.criteria,
-        };
     }
 
     public saveToLocalStorage() {
@@ -64,71 +63,13 @@ class MusicAdventure {
         const dataString = localStorage.getItem("adventure_" + id);
         if (!dataString) return;
         const data = JSON.parse(dataString) as MusicAdventureData;
-        this.setFromSerializedData(id, data);
+        if (!data.id) data.id = id;
+        this.setFromSerializedData(data);
     }
 
     public getPathToNode(nodeId: string) {
         return this.graph.getPathToNode(nodeId);
     }
-
-    /** Recreates the chat history that resulted in the current node (disregarding other branches taken)
-     * Intended use is to append a user index choice and send the resulting history to GPT-4 to generate a new node branch set
-     * Note that this cannot be used on leaf nodes - they represent options presented by the AI. They need to be populated before they can
-     * be integrated into the chat history
-     */
-    // public getChatHistoryAtNode(id: string): OpenAiChatMessage[] {
-    //     const chatHistory: OpenAiChatMessage[] = [];
-    //     if(this.graph.originNode.id === id) {
-    //         const childNodes = this.graph.getNodeChildren(id);
-    //         if(childNodes && childNodes.length > 0) {
-    //             const data = (this.graph.originNode.data as Album);
-    //             chatHistory.unshift(wrapMessage("assistant", JSON.stringify({
-    //                 albumName: data.albumName,
-    //                 artistName: data.artistName,
-    //                 description: data.description,
-    //                 options: childNodes.map(child => (child.data as Direction)),
-    //             }, null, 2)));
-    //         }
-    //         chatHistory.unshift(wrapMessage("user", getStartingPrompt(this.startingAlbum, this.criteria)));
-    //         chatHistory.unshift(systemMessage);
-    //         return chatHistory;
-    //     }
-
-    //     const node = this.graph.nodes[id];
-    //     if(!node) throw new Error(`Node ${id} not found`);
-    //     const childNodes = this.graph.getNodeChildren(id);
-    //     if(!childNodes || childNodes.length === 0) throw new Error(`Node ${id} has no children`);
-    //     const data = node.data;
-    //     if(isAlbum(data)) {
-    //         chatHistory.unshift(wrapMessage("assistant", JSON.stringify({
-    //             albumName: data.albumName,
-    //             artistName: data.artistName,
-    //             description: data.description,
-    //             options: childNodes.map(child => (child.data as Direction)),
-    //         }, null, 2)));
-    //     } else {
-    //         chatHistory.unshift(wrapMessage("assistant", JSON.stringify({
-    //             albums: childNodes.map(child => {
-    //                 const album = child.data as Album;
-    //                 return {
-    //                     index: album.index,
-    //                     albumName: album.albumName,
-    //                     artistName: album.artistName,
-    //                     description: album.description,
-    //                 }
-    //             }),
-    //         }, null, 2)));
-    //     }
-    //     chatHistory.unshift(wrapMessage("user", data.index));
-
-    //     if(this.graph.originNode.id !== id) {
-    //         const parent = this.graph.getNodeParent(id);
-    //         if(!parent) throw new Error(`Node ${id} has no parent`);
-    //         chatHistory.unshift(...this.getChatHistoryAtNode(parent.id));
-    //     }
-
-    //     return chatHistory;
-    // }
 
     public getChatHistoryAtNode(id: string): OpenAiChatMessage[] {
         const path = this.graph.getPathToNode(id);
@@ -392,6 +333,15 @@ class MusicAdventure {
         return {
             nodes: this.graph.nodes,
             edges: this.graph.edges,
+        };
+    }
+
+    public getData(): MusicAdventureData {
+        return {
+            id: this.id,
+            nodes: this.graph.nodes,
+            edges: this.graph.edges,
+            criteria: this.criteria,
         };
     }
 }

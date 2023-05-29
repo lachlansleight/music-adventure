@@ -20,8 +20,7 @@ const MusicPath = ({
     useEffect(() => {
         if (!mapId || !nodeId) return;
 
-        const adventure = new MusicAdventure();
-        adventure.loadFromLocalStorage(mapId);
+        const adventure = MusicAdventure.load(mapId);
         console.log(adventure.getRawData());
         const pathIds = adventure.getPathToNode(nodeId);
         const newPaths: JSX.Element[] = [];

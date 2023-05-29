@@ -4,10 +4,10 @@ A GPT-4 powered music recommendation and exploration engine. This is a temporary
 
 ## Installation
 
--  `git clone https://github.com/lachlansleight/music-adventure` to clone the repo
--  `touch .env` to create a .env file
--  `npm i` to install dependencies
--  `npm run dev` to run the dev server at `https://localhost:3000`
+-   `git clone https://github.com/lachlansleight/music-adventure` to clone the repo
+-   `touch .env` to create a .env file
+-   `npm i` to install dependencies
+-   `npm run dev` to run the dev server at `https://localhost:3000`
 
 The .env file should look like this:
 

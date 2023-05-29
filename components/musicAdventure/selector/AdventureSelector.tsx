@@ -14,7 +14,7 @@ const AdventureSelector = ({
         <div
             className={`${page === "home" ? "grid place-items-center" : ""} w-full px-4`}
             style={{
-                height: page === "home" ? `calc(100vh - 4rem)` : undefined,
+                height: page === "home" ? `calc(100vh - 8rem)` : undefined,
             }}
         >
             {page === "home" && (

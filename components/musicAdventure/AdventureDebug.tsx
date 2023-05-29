@@ -18,8 +18,7 @@ const AdventureDebug = ({ id }: { id: string }): JSX.Element => {
 
         if (loading) return;
 
-        const ad = new MusicAdventure();
-        ad.loadFromLocalStorage(id);
+        const ad = MusicAdventure.load(id);
         ad.onLoadingChanged = setLoading;
         ad.onDataChanged = () => ad.saveToLocalStorage();
 
