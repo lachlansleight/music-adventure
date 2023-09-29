@@ -1,7 +1,7 @@
 {
     "name": "music-adventure",
     "author": "@LachlanSleight",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "scripts": {
         "dev": "next dev -p 3000",
         "build": "next build",

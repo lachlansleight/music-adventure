@@ -344,6 +344,13 @@ class MusicAdventure {
             criteria: this.criteria,
         };
     }
+
+    public getAllAlbums(): Node<Album>[] {
+        return this.graph
+            .getAllNodes()
+            .filter(n => isAlbum(n.data))
+            .map(n => n as Node<Album>);
+    }
 }
 
 export default MusicAdventure;

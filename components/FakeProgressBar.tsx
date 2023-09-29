@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAnimationFrame } from "lib/useAnimationFrame";
+import { useAnimationFrame } from "lib/hooks/useAnimationFrame";
 import ProgressBar from "./controls/ProgressBar";
 
 const FakeProgressBar = ({

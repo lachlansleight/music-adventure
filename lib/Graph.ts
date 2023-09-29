@@ -100,6 +100,10 @@ class Graph<T> {
         this.nextId++;
         return newId;
     }
+
+    public getAllNodes(): Node<T>[] {
+        return Object.values(this.nodes);
+    }
 }
 
 export interface Node<T> {

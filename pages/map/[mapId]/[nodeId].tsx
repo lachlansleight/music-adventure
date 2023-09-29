@@ -10,9 +10,9 @@ import AlbumTileCompact from "components/musicAdventure/AlbumTileCompact";
 import Button from "components/controls/Button";
 import MusicPath from "components/musicAdventure/MusicPath";
 import FakeProgressBar from "components/FakeProgressBar";
-import GraphDiv from "components/musicAdventure/GraphDiv";
 import DirectionButton from "components/musicAdventure/DirectionButton";
 import MarkdownUtils from "lib/MarkdownExport";
+import DynamicMap from "components/musicAdventure/DynamicMap";
 
 const MapNode = (): JSX.Element => {
     const [mapId, setMapId] = useState("");
@@ -151,10 +151,18 @@ const MapNode = (): JSX.Element => {
                                 )}
                             </>
                         )}
-                    <Button onClick={() => {
-                        const markdown = MarkdownUtils.getAlbumNodeMarkdown(mapId, albumNode.id, nodeId === "0");
-                        navigator.clipboard.writeText(markdown);
-                    }}>Copy markdown</Button>
+                    <Button
+                        onClick={() => {
+                            const markdown = MarkdownUtils.getAlbumNodeMarkdown(
+                                mapId,
+                                albumNode.id,
+                                nodeId === "0"
+                            );
+                            navigator.clipboard.writeText(markdown);
+                        }}
+                    >
+                        Copy markdown
+                    </Button>
                 </div>
             )}
             {directionNode && (
@@ -200,12 +208,15 @@ const MapNode = (): JSX.Element => {
                 </div>
             )}
             {nodeId === "0" && (
-                <GraphDiv
+                // <GraphDiv
+                //     mapId={mapId}
+                //     className="text-white mt-4 border border-white rounded-lg border-opacity-20"
+                // />
+                <DynamicMap
                     mapId={mapId}
-                    className="text-white mt-4 border border-white rounded-lg border-opacity-20"
+                    className="text-white mt-4 border border-white rounded-lg border-opacity-20 h-[80rem]"
                 />
             )}
-            
         </Layout>
     );
 };
