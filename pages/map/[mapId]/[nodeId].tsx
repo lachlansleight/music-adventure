@@ -12,6 +12,7 @@ import MusicPath from "components/musicAdventure/MusicPath";
 import FakeProgressBar from "components/FakeProgressBar";
 import GraphDiv from "components/musicAdventure/GraphDiv";
 import DirectionButton from "components/musicAdventure/DirectionButton";
+import MarkdownUtils from "lib/MarkdownExport";
 
 const MapNode = (): JSX.Element => {
     const [mapId, setMapId] = useState("");
@@ -150,6 +151,10 @@ const MapNode = (): JSX.Element => {
                                 )}
                             </>
                         )}
+                    <Button onClick={() => {
+                        const markdown = MarkdownUtils.getAlbumNodeMarkdown(mapId, albumNode.id, nodeId === "0");
+                        navigator.clipboard.writeText(markdown);
+                    }}>Copy markdown</Button>
                 </div>
             )}
             {directionNode && (
@@ -200,6 +205,7 @@ const MapNode = (): JSX.Element => {
                     className="text-white mt-4 border border-white rounded-lg border-opacity-20"
                 />
             )}
+            
         </Layout>
     );
 };
