@@ -1,12 +1,12 @@
 {
     "functions": {
-        "api/continueChat.ts": {
+        "api/continueChat.*": {
             "maxDuration": 300
         },
-        "api/getResponse.ts": {
+        "api/getResponse.*": {
             "maxDuration": 300
         },
-        "api/populateRootNode.ts": {
+        "api/populateRootNode.*": {
             "maxDuration": 300
         }
     }
