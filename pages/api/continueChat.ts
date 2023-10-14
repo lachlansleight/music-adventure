@@ -4,6 +4,8 @@ import OpenAi, { OpenAiChatMessage } from "lib/openAi";
 
 const api = new NextRestApiRoute("/populateAlbum");
 
+export const maxDuration = 300;
+
 api.post = async (req, res) => {
     const history: OpenAiChatMessage[] = req.body.chatHistory;
     try {

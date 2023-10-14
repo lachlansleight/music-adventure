@@ -6,6 +6,8 @@ import { getStartingPrompt, systemMessage, wrapMessage } from "lib/gpt";
 
 const api = new NextRestApiRoute("/getResponse");
 
+export const maxDuration = 300;
+
 api.post = async (req, res) => {
     const pastMessages = req.body.pastMessages;
     const setup: AdventureSetup = req.body.setup;
