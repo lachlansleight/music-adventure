@@ -94,7 +94,10 @@ const DynamicMap = ({
             nodeObjects.current[node.id] = {
                 album: node.data,
                 position: {
-                    x: canvasSize.width * 0.25 + 100 * depth - options.linkDistance * Math.cos(angle),
+                    x:
+                        canvasSize.width * 0.25 +
+                        100 * depth -
+                        options.linkDistance * Math.cos(angle),
                     y: canvasSize.height * 0.5 - options.linkDistance * Math.sin(angle),
                 },
                 velocity: {
@@ -133,7 +136,7 @@ const DynamicMap = ({
 
             if (!nodeObjects.current) return;
             hoveredNode.current = "";
-            if(canvas.current) canvas.current.style.cursor = "default";
+            if (canvas.current) canvas.current.style.cursor = "default";
             for (let i = 0; i < keys.length; i++) {
                 const offsetX = nodeObjects.current[keys[i]].position.x - mousePos.current.x;
                 if (Math.abs(offsetX) > 50) continue;
@@ -141,7 +144,7 @@ const DynamicMap = ({
                 if (Math.abs(offsetY) > 50) continue;
 
                 hoveredNode.current = keys[i];
-                if(canvas.current) canvas.current.style.cursor = "pointer";
+                if (canvas.current) canvas.current.style.cursor = "pointer";
                 break;
             }
 
