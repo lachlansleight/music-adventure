@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import packageJson from "package.json";
 
 const Layout = ({
     padding = 2,
@@ -22,11 +23,14 @@ const Layout = ({
                         boxShadow: "0px 5px 5px rgba(0,0,0,0.2)",
                     }}
                 >
-                    <div className="md: w-[1000px] m-auto h-full">
+                    <div className="md: w-[1000px] m-auto h-full flex justify-between">
                         <div className="flex h-full gap-4 items-center text-lg text-white text-opacity-50">
                             <Link href="/" className="h-full">
                                 Home
                             </Link>
+                        </div>
+                        <div className="flex items-center text-white text-opacity-50 text-xs">
+                            v{packageJson.version}
                         </div>
                     </div>
                 </div>
