@@ -253,6 +253,84 @@ class MusicAdventure {
         this.setLoading(false);
     }
 
+    public async chooseCustomDirection(parentAlbumId: string, customDirection: string) {
+        this.setLoading(true);
+
+        const parentNode = this.graph.nodes[parentAlbumId];
+        if (!parentNode) throw new Error(`Parent album ${parentAlbumId} not found`);
+        const newId = this.graph.addNode(parentAlbumId, {
+            index: "custom",
+            direction: customDirection,
+        });
+
+        const history = this.getChatHistoryAtNode(newId);
+        history[history.length - 1] = wrapMessage("user", `custom: ${customDirection}`);
+        console.log("Getting GPT-4 continuation of the following chat", history);
+        const response = await axios.post("/api/continueChat", { chatHistory: history });
+        // const response: any = {
+        //     data: {
+        //         albums: [
+        //             {
+        //                 index: "a",
+        //                 albumName: "Piper at the Gates of Dawn",
+        //                 artistName: "Pink Floyd",
+        //                 description: "Wow what a nice album",
+        //                 coverUrl: "http://example.com/test.jpg"
+        //             }
+        //         ]
+        //     }
+        // }
+        // await new Promise(resolve => setTimeout(resolve, 1000));
+        if (response.data.invalidResponse) {
+            console.error("Invalid response from GPT4:", response.data.invalidResponse);
+            throw new Error("GPT-4 returned invalid response: " + response.data.invalidResponse);
+        }
+        console.log("Got response", response.data);
+        const newAlbums = response.data.albums as Album[];
+        for (let i = 0; i < newAlbums.length; i++) {
+            const newAlbum = newAlbums[i];
+            const discogsInfo = await axios.post("/api/getDiscogsInfo", {
+                albumName: newAlbum.albumName,
+                artistName: newAlbum.artistName,
+            });
+            newAlbum.coverUrl = discogsInfo.data.cover_image;
+            this.graph.addNode(newId, newAlbum);
+        }
+        console.log("New albums: ", newAlbums);
+        if (this.onDataChanged) this.onDataChanged(this.graph);
+        this.setLoading(false);
+    }
+
+    public async getMoreAlbums(parentDirectionId: string) {
+        this.setLoading(true);
+
+        const parentNode = this.graph.nodes[parentDirectionId];
+        if (!parentNode) throw new Error(`Parent direction ${parentDirectionId} not found`);
+
+        const history = this.getChatHistoryAtNode(parentDirectionId);
+        history.push(wrapMessage("user", "more options"));
+
+        const response = await axios.post("/api/continueChat", { chatHistory: history });
+        if (response.data.invalidResponse) {
+            console.error("Invalid response from GPT4:", response.data.invalidResponse);
+            throw new Error("GPT-4 returned invalid response: " + response.data.invalidResponse);
+        }
+        console.log("Got response", response.data);
+        const newAlbums = response.data.albums as Album[];
+        for (let i = 0; i < newAlbums.length; i++) {
+            const newAlbum = newAlbums[i];
+            const discogsInfo = await axios.post("/api/getDiscogsInfo", {
+                albumName: newAlbum.albumName,
+                artistName: newAlbum.artistName,
+            });
+            newAlbum.coverUrl = discogsInfo.data.cover_image;
+            this.graph.addNode(parentDirectionId, newAlbum);
+        }
+        console.log("New albums: ", newAlbums);
+        if (this.onDataChanged) this.onDataChanged(this.graph);
+        this.setLoading(false);
+    }
+
     public async chooseAlbum(parentDirectionId: string, albumIndex: string) {
         this.setLoading(true);
 
@@ -292,6 +370,29 @@ class MusicAdventure {
         const newDirections = response.data.options as Direction[];
         for (let i = 0; i < newDirections.length; i++) {
             this.graph.addNode(albumNode.id, newDirections[i]);
+        }
+        if (this.onDataChanged) this.onDataChanged(this.graph);
+        this.setLoading(false);
+    }
+
+    public async getMoreDirections(parentAlbumId: string) {
+        this.setLoading(true);
+
+        const parentNode = this.graph.nodes[parentAlbumId];
+        if (!parentNode) throw new Error(`Parent album ${parentAlbumId} not found`);
+
+        const history = this.getChatHistoryAtNode(parentAlbumId);
+        history.push(wrapMessage("user", "more options"));
+
+        const response = await axios.post("/api/continueChat", { chatHistory: history });
+        if (response.data.invalidResponse) {
+            console.error("Invalid response from GPT4:", response.data.invalidResponse);
+            throw new Error("GPT-4 returned invalid response: " + response.data.invalidResponse);
+        }
+        console.log("Got response", response.data);
+        const newDirections = response.data.options as Direction[];
+        for (let i = 0; i < newDirections.length; i++) {
+            this.graph.addNode(parentAlbumId, newDirections[i]);
         }
         if (this.onDataChanged) this.onDataChanged(this.graph);
         this.setLoading(false);

@@ -16,7 +16,7 @@ const mainPrompt = `I would like you to make a musical choose your own adventure
 Present two options with the format "something that is more...", and two options with the format "something else that is also...". The first two options should present albums that differ from the source album in the interesting ways. The second two options should be albums that are similar to the source album in interesting ways.
 Don't present more than one album by the same artist.
 
-I will respond with the index of the option I chose. If I respond with 'more options', then you should present four different options in the same format. I may respond with 'custom: [custom direction]'. Once I make a selection, give me four albums that fit the chosen direction in the following format:
+I will respond with the index of the option I chose. If I respond with 'more options', then you should respond with a JSON object containing an array at the key 'options' containing four more options in the same format as above (with indices starting at the next available letter). I may respond with 'custom: [custom direction]'. Once I make a selection, give me four albums that fit the chosen direction in the following format:
 
 {
     "albums": [
@@ -35,7 +35,7 @@ I will respond with the index of the option I chose. If I respond with 'more opt
     ]
 }
 
-I will respond with the index of the album option I choose. The process should then repeat with that album representing the new origin point for the first JSON format. If I respond with 'more options', then you should present four different options in the same format.
+I will respond with the index of the album option I choose. If I respond with 'more options', then you should respond with a JSON object containing an array at the key 'albums' containing four more albums in the same format as above (with indices starting at the next available letter). The process should then repeat with that album representing the new origin point for the first JSON format.
 
 All album suggestions should meet the following criteria:
 [CRITERIA]

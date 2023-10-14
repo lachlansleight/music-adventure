@@ -45,6 +45,36 @@ const MapNode = (): JSX.Element => {
         }
     }, [mapId, nodeId, albumNode, directionNode, parentAlbumNode, parentDirectionNode]);
 
+    const loadMore = useCallback(async () => {
+        const adventure = MusicAdventure.load(mapId);
+        if (albumNode) {
+            setLoading(true);
+            await adventure.getMoreDirections(albumNode.id);
+            adventure.saveToLocalStorage();
+            setLoading(false);
+        } else if (directionNode && parentAlbumNode) {
+            setLoading(true);
+            await adventure.getMoreAlbums(directionNode.id);
+            adventure.saveToLocalStorage();
+            setLoading(false);
+        } else {
+            console.error(
+                "Somehow we got here - both album and direction node are null, and we're trying to load children. Weird"
+            );
+        }
+    }, [mapId, nodeId, albumNode, directionNode]);
+
+    const customDirection = useCallback(async () => {
+        if (!albumNode) return;
+        const newDirection = window.prompt("Enter new direction");
+        if (!newDirection) return;
+        const adventure = MusicAdventure.load(mapId);
+        setLoading(true);
+        await adventure.chooseCustomDirection(albumNode.id, newDirection);
+        adventure.saveToLocalStorage();
+        setLoading(false);
+    }, [mapId, nodeId, albumNode]);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -123,18 +153,34 @@ const MapNode = (): JSX.Element => {
                     )}
                     <AlbumTile album={albumNode.data} />
                     {childDirectionNodes && childDirectionNodes.length > 0 && (
-                        <div className="flex flex-col gap-2">
-                            {childDirectionNodes.map(dir => {
-                                return (
-                                    <DirectionButton
-                                        key={dir.id}
-                                        mapId={mapId}
-                                        nodeId={dir.id}
-                                        onClick={() => router.push(`/map/${mapId}/${dir.id}`)}
-                                    />
-                                );
-                            })}
-                        </div>
+                        <>
+                            <div className="flex flex-col gap-2">
+                                {childDirectionNodes.map(dir => {
+                                    return (
+                                        <DirectionButton
+                                            key={dir.id}
+                                            mapId={mapId}
+                                            nodeId={dir.id}
+                                            onClick={() => router.push(`/map/${mapId}/${dir.id}`)}
+                                        />
+                                    );
+                                })}
+                            </div>
+                            {loading ? (
+                                <div className="flex justify-center w-full">
+                                    <FaSync className="animate-spin text-2xl my-1" />
+                                </div>
+                            ) : (
+                                <div className="flex justify-between gap-4">
+                                    <Button className="w-full" onClick={() => loadMore()}>
+                                        More Directions
+                                    </Button>
+                                    <Button className="w-full" onClick={() => customDirection()}>
+                                        Custom Direction
+                                    </Button>
+                                </div>
+                            )}
+                        </>
                     )}
                     {parentDirectionNode &&
                         (!childDirectionNodes || childDirectionNodes.length === 0) && (
@@ -179,19 +225,28 @@ const MapNode = (): JSX.Element => {
                         <p className="text-center text-sm">{directionNode.data.direction}</p>
                     </div>
                     {childAlbumNodes && childAlbumNodes.length > 0 && (
-                        <div className="grid grid-cols-2 gap-4">
-                            {childAlbumNodes.map(album => {
-                                return (
-                                    <div
-                                        key={album.id}
-                                        className="cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded-lg md:px-2 transition-all"
-                                        onClick={() => router.push(`/map/${mapId}/${album.id}`)}
-                                    >
-                                        <AlbumTileCompact album={album.data} />
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-2 gap-4">
+                                {childAlbumNodes.map(album => {
+                                    return (
+                                        <div
+                                            key={album.id}
+                                            className="cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-10 rounded-lg md:px-2 transition-all"
+                                            onClick={() => router.push(`/map/${mapId}/${album.id}`)}
+                                        >
+                                            <AlbumTileCompact album={album.data} />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            {loading ? (
+                                <div className="flex justify-center w-full">
+                                    <FaSync className="animate-spin text-2xl my-1" />
+                                </div>
+                            ) : (
+                                <Button onClick={() => loadMore()}>More Albums</Button>
+                            )}
+                        </>
                     )}
                     {parentAlbumNode && (!childAlbumNodes || childAlbumNodes.length === 0) && (
                         <>
