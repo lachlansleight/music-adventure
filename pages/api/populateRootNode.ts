@@ -7,7 +7,9 @@ import { performDiscogsSearch } from "./getDiscogsInfo";
 
 const api = new NextRestApiRoute("/populateRootNode");
 
-export const maxDuration = 300;
+export const config = {
+    maxDuration: 300
+};
 
 api.post = async (req, res) => {
     const albumName = getUrlSafeName(req.body.albumName || "");
