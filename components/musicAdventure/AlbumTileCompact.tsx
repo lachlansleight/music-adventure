@@ -24,7 +24,7 @@ const AlbumTileCompact = ({
             >
                 <h3 className="text-lg m-0 leading-none">{album.albumName}</h3>
                 <h2 className="text-sm m-0 leading-none">{album.artistName}</h2>
-                <p className="text-xs italic text-neutral-400">{album.description}</p>
+                <p className="text-xs italic text-neutral-400 pr-4">{album.description}</p>
                 {children}
             </div>
         </div>
