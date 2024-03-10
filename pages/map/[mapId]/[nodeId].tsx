@@ -162,6 +162,14 @@ const MapNode = (): JSX.Element => {
                                             mapId={mapId}
                                             nodeId={dir.id}
                                             onClick={() => router.push(`/map/${mapId}/${dir.id}`)}
+                                            onPruneClick={() => {
+                                                const adventure = MusicAdventure.load(mapId);
+                                                adventure.pruneNode(albumNode.id);
+                                                adventure.saveToLocalStorage();
+                                                setChildDirectionNodes(
+                                                    adventure.getChildren(albumNode.id).map(c => c as Node<Direction>)
+                                                );
+                                            }}
                                         />
                                     );
                                 })}
@@ -262,6 +270,17 @@ const MapNode = (): JSX.Element => {
                     )}
                 </div>
             )}
+
+            {nodeId !== "0" && (
+                <Button className="bg-red-400 w-full" onClick={() => {
+                    if(!window.confirm("Really prune? This will also recursively remove ALL child nodes")) return;
+                    const adventure = MusicAdventure.load(mapId);
+                    adventure.pruneNode(nodeId);
+                    adventure.saveToLocalStorage();
+                    router.push(`/map/${mapId}/${parentAlbumNode?.id || parentAlbumNode?.id || 0}`);
+                }}>Prune {albumNode ? "Album" : "Direction"}</Button>
+            )}
+
             {nodeId === "0" && (
                 // <GraphDiv
                 //     mapId={mapId}

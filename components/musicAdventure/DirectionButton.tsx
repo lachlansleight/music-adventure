@@ -34,7 +34,7 @@ const DirectionButton = ({
 
     return (
         <div
-            className="select-none cursor-pointer bg-white bg-opacity-10 hover:bg-opacity-20 transition-all rounded p-1 flex flex-col items-center gap-2"
+            className="select-none cursor-pointer bg-white bg-opacity-10 hover:bg-opacity-20 transition-all rounded p-1 flex flex-col items-center gap-2 relative"
             onClick={onClick}
         >
             <p className="text-center text-sm">{direction.data.direction}</p>
